@@ -59,14 +59,30 @@ const signUp=asyncHandler(async(req,res)=>{
     .json(new apiResponse(200,createuser,"Sign up successful"))
 
    } catch (error) {
-     console.log("Error during creating Signup: ",error);
+     if (error.name === "ValidationError") {
+       const errors = Object.values(error.errors).map(err => err.message);
+       throw new apiError(401, "Password must be 8 letters", errors)
+    }
+    
+    if (error instanceof apiError) {
+    // custom apiError (like “User already exist!!”) → rethrow as is
+    throw error;
+  }
+  //for something unusual error    
+  throw new apiError(501, "Something went wrong during signup")
+    
+
    }
 })
 
 const login=asyncHandler(async(req,res)=>{
     const{email, password}=req.body
-    if(!email && !password){
-         throw new apiError(400, "username or email is required");
+    if (!email) {
+      throw new apiError(400, "Email is required", ["Email cannot be empty"]);
+    }
+
+    if (!password) {
+      throw new apiError(400, "Password is required", ["Password cannot be empty"]);
     }
 
     const user= await User.findOne({email});
@@ -92,10 +108,7 @@ const login=asyncHandler(async(req,res)=>{
      return res.status(200)
   .cookie("accessToken", accessToken, options)
   .cookie("refreshToken", refreshToken, options)
-  .json(
-    new apiResponse(200,loggedInUser,"User Logged in successfully"
-    )
-  )
+  .json(new apiResponse(200,loggedInUser,"User Logged in successfully"))
 
 })
 
@@ -123,6 +136,8 @@ const logout=asyncHandler(async(req, res)=>{
   .clearCookie("refreshToken", options)
   .json( new apiResponse(200,{}, "User Logged out Successfully"))
 })
+
+
 
 export {
     signUp,
