@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { serverurl } from '../config.js';
 import axios from 'axios'
+import {useDispatch, useSelector} from "react-redux"
+import { setUserData } from '../redux/userSlice.js';
 
 function Signup() {
   const navigate=useNavigate();
@@ -12,6 +14,8 @@ function Signup() {
   const[password, setPassword]=useState("")
   const[loading,setLoading]=useState(false)
   const[error, setError]=useState("")
+  
+  const dispatch=useDispatch()
 
   const handleSignup=async(e)=>{
     e.preventDefault()
@@ -22,6 +26,8 @@ function Signup() {
           email,
           password
       },{withCredentials:true})
+      console.log(result);
+      dispatch(setUserData(result.data.data))
       setUsername("")
       setEmail("")
       setPassword("")
