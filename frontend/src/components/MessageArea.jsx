@@ -44,7 +44,6 @@ function MessageArea() {
         formData.append("image",backendImage)
       }
       const result=await axios.post(`${serverurl}/api/v2/message/send/${selectedUser._id}`,formData,{withCredentials:true})
-      console.log(result.data);
       const newMessage = result.data.data;
       const current = Array.isArray(messages) ? messages : [];
       dispatch(setMessages([...current, newMessage]));
@@ -144,7 +143,6 @@ function MessageArea() {
 )}
 
     <div>
-    {console.log("running...")}
       <FaImages className='text-4xl text-gray-700 ml-3 cursor-pointer' onClick={()=>{
         image.current.value = "";
         image.current.click()}}/>

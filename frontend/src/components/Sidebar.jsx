@@ -6,13 +6,15 @@ import { RxCross2 } from "react-icons/rx";
 import { CiLogout } from "react-icons/ci";
 import { serverurl } from '../config';
 import axios from 'axios';
-import { setOtherUsers, setSelectedUser, setUserData } from '../redux/userSlice';
+import { setOtherUsers, setSearchData, setSelectedUser, setUserData } from '../redux/userSlice';
 import { useNavigate } from "react-router-dom";
+import { useEffect } from 'react';
 
 
 function Sidebar() {
-    const {userData,otherUser,selectedUser,onlineUsers}=useSelector(state=>state.user)
+    const {userData,otherUser,selectedUser,onlineUsers,searchData}=useSelector(state=>state.user)
     const[search, setSearch]=useState(false)
+    const[input, setInput]=useState("")
 
     const dispatch=useDispatch()
     const navigate=useNavigate()
@@ -27,6 +29,21 @@ function Sidebar() {
         console.log("Error in handleLogout",error);
       }
     }
+
+    const handleSearch=async()=>{
+      try {
+     const result = await axios.get(`${serverurl}/api/v2/user/search?query=${input}`, { withCredentials: true })
+      dispatch(setSearchData(result.data.data))    
+      } catch (error) {
+        console.log("Error in handleSearch",error);
+      }
+    }
+
+    useEffect(()=>{
+      if(input){
+        handleSearch()
+      }
+    },[input])
 
   return (
     <div className={`lg:w-[30%] w-full h-full overflow-hidden lg:block bg-white lg:block ${!selectedUser?"block":"hidden"}`}>
@@ -53,12 +70,65 @@ function Sidebar() {
               </div>
         }
         {search && 
-            <form className='w-screen h-[50px] bg-white shadow-gray-400 shadow-lg flex items-center gap-[10px] rounded-full'>
-             <IoSearch className='w-[30px] h-[30px] ml-3'/>
-             <input type="text" placeholder='search user...' className='w-full h-full outline-0 border-0 text-[20px] font-semibold'/>
-             <RxCross2 className='w-[30px] h-[30px] cursor-pointer mr-5' onClick={()=>setSearch(false)}/>
-            </form>
-        }
+  <div className='w-screen relative'>
+    <form className='w-full h-[50px] bg-white shadow-gray-400 shadow-lg flex items-center gap-[10px] rounded-full px-3' onSubmit={(e)=>e.preventDefault()}>
+      <IoSearch className='w-[30px] h-[30px]'/>
+      <input 
+        type="text" 
+        placeholder='search user...' 
+        className='w-full h-full outline-0 border-0 text-[20px] font-semibold'
+        onChange={(e)=>setInput(e.target.value)}
+        value={input}
+      />
+      <RxCross2 
+        className='w-[30px] h-[30px] cursor-pointer' 
+        onClick={()=>{
+          setInput("")
+          setSearch(false)
+          dispatch(setSearchData([]))
+        }}
+      />
+    </form>
+
+    {/* Search Results */}
+    {input.trim() !== "" && searchData?.length > 0 && (
+  <div className='absolute top-[60px] left-0 w-full bg-white shadow-lg rounded-lg max-h-[300px] overflow-y-auto z-50 flex flex-col gap-2 p-2'>
+    {searchData
+      .filter(user => user._id !== userData?._id) // ✅ remove logged-in user
+      .map(user => (
+        <div 
+          key={user._id} 
+          className='flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-lg'
+          onClick={() => {
+            dispatch(setSelectedUser(user))
+            setInput("")
+          }}
+        >
+          {/* Profile Image */}
+          <div className="relative w-[50px] h-[50px] rounded-full overflow-hidden border-2 border-[#20c7ff]">
+            <img 
+              src={user.image || dp} 
+              alt={user.name || user.username} 
+              className='w-full h-full object-cover'
+            />
+            {onlineUsers?.includes(user._id) && (
+              <div className="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green-500 border-2 border-white rounded-full shadow-md"></div>
+            )}
+          </div>
+
+          {/* Name */}
+          <div className='text-gray-700 font-medium'>
+            {user.name || user.username}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+)}
+
+  </div>
+}
+
 
         <div className="w-full overflow-hidden ml-5 gap-[40px] hide-scrollbar">
           <div className="relative">

@@ -74,8 +74,31 @@ const getOtherUsers=asyncHandler(async(req,res)=>{
 })
 
 
+const search=asyncHandler(async(req,res)=>{
+    try {
+        const {query}=req.query
+        if(!query){
+            throw new apiError(400, "query is required")
+        }
+
+        const users=await User.find({
+            $or:[
+                {name:{$regex:query,$options:"i"}},
+                {username:{$regex:query,$options:"i"}}
+            ]
+        })
+
+        return res.status(200)
+        .json(new apiResponse(200,users,"Succesfully fetched the user"))
+    } catch (error) {
+        if (error instanceof apiError) throw error;
+      throw new apiError(401, "Error in search controller")
+    }
+})
+
 export {
     getCurrentUser,
     editProfile,
-    getOtherUsers
+    getOtherUsers,
+    search
 }
