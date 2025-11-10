@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react'
 import dp from "../assets/dp.webp"
+import { useSelector } from 'react-redux'
 
 function SenderMessage({image,message}) {
   const scroll=useRef()
+  const {userData}=useSelector(state=>state.user)
 
   const handleImageScroll=()=>{
     scroll.current.scrollIntoView({behavior:"smooth"})

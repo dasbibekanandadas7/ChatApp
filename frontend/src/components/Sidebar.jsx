@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 
 function Sidebar() {
-    const {userData,otherUser,selectedUser}=useSelector(state=>state.user)
+    const {userData,otherUser,selectedUser,onlineUsers}=useSelector(state=>state.user)
     const[search, setSearch]=useState(false)
 
     const dispatch=useDispatch()
@@ -48,27 +48,57 @@ function Sidebar() {
 
         <div className='w-full flex items-center gap-[20px]'>
            {!search &&
-              <div className='w-[60px] h-[60px] rounded-full overflow-hidden flex justify-center items-center shadow-gray-400 shadow-lg bg-white cursor-pointer' onClick={()=>setSearch(true)}>
+              <div className='w-[60px] h-[60px] rounded-full overflow-hidden flex justify-center items-center shadow-gray-400 shadow-lg bg-white cursor-pointer mb-4' onClick={()=>setSearch(true)}>
               <IoSearch className='w-[25px] h-[25px]'/>
               </div>
         }
         {search && 
-            <form className='w-screen h-[60px] bg-white shadow-gray-400 shadow-lg flex items-center gap-[10px] rounded-full'>
+            <form className='w-screen h-[50px] bg-white shadow-gray-400 shadow-lg flex items-center gap-[10px] rounded-full'>
              <IoSearch className='w-[30px] h-[30px] ml-3'/>
              <input type="text" placeholder='search user...' className='w-full h-full outline-0 border-0 text-[20px] font-semibold'/>
              <RxCross2 className='w-[30px] h-[30px] cursor-pointer mr-5' onClick={()=>setSearch(false)}/>
             </form>
         }
 
-        <div className="w-full overflow-hidden ml-5 gap-[40px]">
+        <div className="w-full overflow-hidden ml-5 gap-[40px] hide-scrollbar">
           <div className="relative">
             <div className="flex gap-[30px] overflow-x-auto snap-x snap-mandatory py-2 no-scrollbar ">
-              {!search &&
-                otherUser?.map((user) => (
-                <div key={user?._id} className="min-w-[60px] h-[60px] rounded-full overflow-hidden flex justify-center items-center shadow-gray-400 shadow-lg flex-shrink-0 snap-start">
-                   <img src={user.image || dp} alt="" className="w-full h-full object-cover object-top"/>
-                </div>
-                ))}
+             {!search &&
+  otherUser?.map((user) => (
+    onlineUsers?.includes(user._id) &&
+    <div
+      key={user?._id}
+      className="flex flex-col items-center justify-center gap-2 flex-shrink-0 snap-start w-[70px] mt-2"
+      onClick={()=>dispatch(setSelectedUser(user))}
+    >
+      {/* Wrapper allows dot positioning outside image */}
+      <div className="relative w-[60px] h-[60px] flex justify-center items-center">
+        
+        {/* Circular image */}
+        <div className="w-full h-full rounded-full overflow-hidden shadow-gray-400 shadow-lg border-2 border-[#20c7ff]">
+          <img
+            src={user.image || dp}
+            alt={user?.name || user?.username}
+            className="w-full h-full object-cover object-top"
+          />
+        </div>
+
+        {/* ✅ Online Status Dot — bottom-right position */}
+        {onlineUsers?.includes(user._id) && (
+          <div className="absolute bottom-0 right-0 w-[16px] h-[16px] bg-green-500 border-2 border-white rounded-full shadow-md"></div>
+        )}
+      </div>
+
+      {/* Username */}
+      <div className="text-[12px] text-gray-700 font-medium text-center truncate w-[70px]">
+        {user?.name || user?.username}
+      </div>
+    </div>
+  ))}
+
+
+    
+
             </div>
 
     {/* thin gray line at bottom */}
@@ -79,7 +109,7 @@ function Sidebar() {
 
       </div>
 
-      <div className='w-full h-[50vh] overflow-auto flex flex-col gap-[15px] px-2 mt-4 mb-4 py-3 bg-white'>
+      <div className='w-full h-[50vh] overflow-auto flex flex-col hide-scrollbar gap-[15px] px-2 mt-4 mb-4 py-3 bg-white'>
       {otherUser?.map((user) => (
         <div key={user?._id} className='w-full h-[70px] flex items-center gap-[15px] bg-gray-100 rounded-2xl shadow-md hover:shadow-lg px-4 py-2 cursor-pointer transition-all duration-200 hover:bg-blue-300' onClick={()=>dispatch(setSelectedUser(user))}>
       {/* Profile Image */}

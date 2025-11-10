@@ -90,7 +90,7 @@ function MessageArea() {
           </h1>
       </div>
 
-      <div className='w-full h-[900px] bg-sky-100 flex flex-col py-[30px] px-[20px] overflow-auto'>
+      <div className='w-full h-[900px] bg-sky-100 flex flex-col py-[30px] px-[20px] overflow-auto hide-scrollbar'>
       {showPicker &&
         <div className='absolute bottom-[90px] left-[20px]'>
           <EmojiPicker width={350} height={450} className='shadow-lg' onEmojiClick={onEmojiClick}/>

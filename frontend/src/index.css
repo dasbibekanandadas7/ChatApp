@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -66,6 +67,9 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* ---------- Scrollbar Styles ---------- */
+
 /* Very thin gray horizontal scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   height: 3px; /* thickness of scrollbar */
@@ -89,6 +93,7 @@ button:focus-visible {
   scrollbar-width: thin;
   scrollbar-color: #9ca3af transparent;
 }
+
 /* Hide scrollbar completely but keep scroll functionality */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -98,3 +103,23 @@ button:focus-visible {
   scrollbar-width: none;     /* for Firefox */
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+/* ---------- New Class: hide-scrollbar ---------- */
+/* Use this on white background sections like message area & users area */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
