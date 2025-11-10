@@ -16,7 +16,7 @@ const usegetMessage=()=>{
                 const result=await axios.get(`${serverurl}/api/v2/message/get/${selectedUser._id}`,{withCredentials:true})
                 dispatch(setMessages(result.data.data))
             } catch (error) {
-                console.log("error in getOtheruser custom hook: ",error);
+                console.log("error in getMessage custom hook: ",error);
             }
         }
         fetchMessage()

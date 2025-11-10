@@ -1,4 +1,4 @@
-import React, { useState, useRef} from 'react'
+import React, { useState, useRef, useEffect} from 'react'
 import { IoIosArrowRoundBack } from "react-icons/io";
 import dp from "../assets/dp.webp"
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,7 +14,7 @@ import {serverurl} from "../config"
 import { setMessages } from '../redux/messageSlice';
 
 function MessageArea() {
-  const {selectedUser, userData}=useSelector(state=>state.user)
+  const {selectedUser, userData,socket}=useSelector(state=>state.user)
   const {messages}=useSelector(state=>state.message)
 
   const dispatch=useDispatch()
@@ -33,6 +33,9 @@ function MessageArea() {
 
   const handleSendMessage=async(e)=>{
     e.preventDefault()
+    if(input.length==0 && backendImage==null){
+      return
+    }
     setShowPicker(false)
     try {
       const formData=new FormData()
@@ -59,6 +62,15 @@ function MessageArea() {
     setBackendImage(file)
     setFrontendImage(URL.createObjectURL(file))
   }
+
+
+  useEffect(()=>{
+    socket.on("newMessage",(mess)=>{
+      dispatch(setMessages([...messages,mess]))
+    })
+
+    return ()=>socket.off("newMessage")
+  },[messages,setMessages])
 
   return (
     <div className={`lg:w-[70%] ${selectedUser?"flex":"hidden"} lg:flex w-full h-full bg-slate-200 !border-l-4 border-gray-300 relative`}>
@@ -87,8 +99,8 @@ function MessageArea() {
        {/* <SenderMessage/ > */}
 
        {messages && messages.map((mess)=>(
-         mess.sender==userData._id?<SenderMessage key="mess._id" image={mess.image} message={mess.message}/>:
-         <ReceiverMessage key="mess._id" image={mess.image} message={mess.message}/>
+         mess.sender==userData._id?<SenderMessage key={mess._id} image={mess.image} message={mess.message}/>:
+         <ReceiverMessage key={mess._id} image={mess.image} message={mess.message}/>
        ))}
       </div>
 
@@ -133,14 +145,17 @@ function MessageArea() {
 
     <div>
     {console.log("running...")}
-      <FaImages className='text-4xl text-gray-700 ml-3 cursor-pointer' onClick={()=>image.current.click()}/>
+      <FaImages className='text-4xl text-gray-700 ml-3 cursor-pointer' onClick={()=>{
+        image.current.value = "";
+        image.current.click()}}/>
     </div>
   
   </form>
 
-  <div className="w-[60px] h-[60px] bg-[#2ebeee] rounded-full flex items-center justify-center cursor-pointer shadow-md ml-5" onClick={() => formRef.current.requestSubmit()}>
+  {(input.length>0 || backendImage) && (<div className="w-[60px] h-[60px] bg-[#2ebeee] rounded-full flex items-center justify-center cursor-pointer shadow-md ml-5" onClick={() => formRef.current.requestSubmit()}>
     <LuSendHorizontal className="text-3xl text-white" />
-  </div>
+  </div>)}
+
  </div>
       </div>
 
