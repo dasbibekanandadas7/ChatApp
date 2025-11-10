@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { serverurl } from '../config';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUserData } from '../redux/userSlice';
+import { setSelectedUser, setUserData } from '../redux/userSlice';
 
 function Login() {
  const navigate=useNavigate();
@@ -25,6 +25,8 @@ function Login() {
       password
     },{withCredentials:true})
     dispatch(setUserData(result.data.data))
+    dispatch(setSelectedUser(null))
+    navigate("/")
     setEmail("")
     setPassword("")
     setError("")

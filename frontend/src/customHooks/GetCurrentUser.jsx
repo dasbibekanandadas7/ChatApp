@@ -9,7 +9,6 @@ const usegetCurrentUser=()=>{
     const{userData}=useSelector(state=>state.user)
 
     useEffect(()=>{
-        console.log("getCurrentUser");
         const fetchUser=async()=>{
             try {
                 const result=await axios.get(`${serverurl}/api/v2/user/currentuser`,{withCredentials:true})

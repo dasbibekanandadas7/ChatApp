@@ -3,6 +3,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import authRouter from './routes/auth.routes.js';
 import userRouter from './routes/user.routes.js';
+import messageRouter from './routes/message.routes.js';
 
 
 const app=express();
@@ -24,6 +25,7 @@ app.use(cookieParser());
 
 app.use("/api/v2/auth",authRouter)
 app.use("/api/v2/user",userRouter)
+app.use("/api/v2/message",messageRouter)
 
 
 app.use((err, req, res, next) => {

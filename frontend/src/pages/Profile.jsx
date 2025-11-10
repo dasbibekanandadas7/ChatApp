@@ -41,6 +41,7 @@ function Profile() {
             const result=await axios.put(`${serverurl}/api/v2/user/profile`,formData,{withCredentials:true})
             dispatch(setUserData(result.data.data))
             setLoading(false)
+            navigate("/")
         } catch (error) {
              console.log("error in handle Profile",error);
              setLoading(false)

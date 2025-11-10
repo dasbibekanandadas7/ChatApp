@@ -7,7 +7,6 @@ import {useDispatch, useSelector} from "react-redux"
 import { setUserData } from '../redux/userSlice.js';
 
 function Signup() {
-  const navigate=useNavigate();
   const[show, setShow]=useState(false)
   const[username, setUsername]=useState("")
   const[email,setEmail]=useState("")
@@ -15,6 +14,7 @@ function Signup() {
   const[loading,setLoading]=useState(false)
   const[error, setError]=useState("")
   
+  const navigate=useNavigate();
   const dispatch=useDispatch()
 
   const handleSignup=async(e)=>{
@@ -28,6 +28,7 @@ function Signup() {
       },{withCredentials:true})
       console.log(result);
       dispatch(setUserData(result.data.data))
+      navigate("/profile")
       setUsername("")
       setEmail("")
       setPassword("")
